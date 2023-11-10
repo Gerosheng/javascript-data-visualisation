@@ -234,10 +234,10 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
 
     // Function to update the Chart.js chart
     function fetchDataAndUpdateChart(){
-        // "/api" url is declared in vite.config.js to avoid CORS issues
+        // "/api" url is declared in vite.config.js to avoid CORS issues, to use only for dev
         let xstart = dataPoints.length + 1;
         let ystart = dataPoints.length > 0 ? dataPoints[dataPoints.length - 1] : 0;
-        let url = "/api" + "?xstart=" + xstart + "&ystart=" + ystart + "&length=1&type=json";
+        let url = /* "/api" */"https://canvasjs.com/services/data/datapoints.php"+ "?xstart=" + xstart + "&ystart=" + ystart + "&length=1&type=json";
         
         fetch(url)
             .then(response => response.json())
