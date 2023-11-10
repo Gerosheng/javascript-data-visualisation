@@ -235,7 +235,9 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
     // Function to update the Chart.js chart
     function fetchDataAndUpdateChart(){
         // "/api" url is declared in vite.config.js to avoid CORS issues
-        let url = "/api" + "?xstart=" + (dataPoints.length + 1) + "&ystart=" + (dataPoints[dataPoints.length - 1]) + "&length=1&type=json";
+        let xstart = dataPoints.length + 1;
+        let ystart = dataPoints.length > 0 ? dataPoints[dataPoints.length - 1] : 0;
+        let url = "/api" + "?xstart=" + xstart + "&ystart=" + ystart + "&length=1&type=json";
         
         fetch(url)
             .then(response => response.json())
