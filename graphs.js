@@ -65,9 +65,10 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
         console.log('Script element with src="graphs.js" not found.');
     }
 
+    // creating the chart using chart.js
     const ctx = document.getElementById("myChart01");
 
-    let chartData01 = {
+    const chartData01 = {
         labels: ["2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012"],
         datasets: dataTable01.map(function (country01, index){
             return {
@@ -78,7 +79,7 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
             };
         }),
     };
-    let chartTable01 = new Chart(ctx,{
+    const chartTable01 = new Chart(ctx,{
             type: "bar",
             data: chartData01,
             options: {
@@ -142,7 +143,7 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
 
     const ctx = document.getElementById("chartTable02");
 
-    let chartData02 = {
+    const chartData02 = {
         labels: ["2007-09","2010-12" ],
         datasets: dataTable02.map(item => ({
             label: item.country,
@@ -152,7 +153,7 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
           })),
     };
 
-    let chartTable02 = new Chart(ctx, {
+    const chartTable02 = new Chart(ctx, {
         type: "bar",
         data: chartData02,
         options: {
@@ -165,19 +166,20 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
             },
           },
         },
-      });
+    });
 
 
-      function getRandomColor() {
+    function getRandomColor() {
         var letters = "0123456789ABCDEF";
         var color = "#";
         for (var i = 0; i < 6; i++) {
           color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
-      }
+    }
 })();
 
+/* Live chart with dataPoints from external JSON */
 (()=>{
     const canvasRemote = document.createElement("canvas");
     canvasRemote.id = "canvasRemote";
@@ -195,18 +197,20 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
         console.log("One or both of the specified elements not found.");
     };
 
-    let dataPoints = [];
+    const dataPoints = [];
 
     const ctx = canvasRemote;
     const chartRemote = new Chart(ctx, {
         type: "line",
         data: {
+            labels: [],
             datasets: [
                 {
-                    label: "Live Data",
+                    label: "Data Points",
                     data: dataPoints,
-                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderColor: "",
                     fill: false,
+                    tension: 0.1
                 },
             ],
         },
@@ -229,26 +233,25 @@ chartCDNScript.src = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/char
 
 
     // Function to update the Chart.js chart
-    function updateChart() {
-        $.getJSON("/api", function (data) {
-            $.each(data, function (key, value) {
-                
-                    dataPoints.push({
-                        x: parseInt(value[0]),
-                        y: parseInt(value[1]),
-                        
-                });
-              
-            });
-            //chartRemote.data.datasets[0].data = dataPoints
-            
-            setTimeout(function () {
-                updateChart();
-            }, 1000);
-        });
-    }
+    function fetchDataAndUpdateChart(){
+        // "/api" url is declared in vite.config.js to avoid CORS issues
+        let url = "/api" + "?xstart=" + (dataPoints.length + 1) + "&ystart=" + (dataPoints[dataPoints.length - 1]) + "&length=1&type=json";
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    dataPoints.push(data[0][1]);
+                    chartRemote.data.labels.push(data[0][0]);
+                    chartRemote.update();
+                }
+                console.log(dataPoints);
+            })
+            .catch(error => console.error("Error fetching data: " + error));
 
-    // Start updating the chart with data
-    updateChart();
-    console.log(dataPoints)
-})();
+        setTimeout(fetchDataAndUpdateChart, 1000);
+    };
+
+    fetchDataAndUpdateChart();
+
+})(); 
