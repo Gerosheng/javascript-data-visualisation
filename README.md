@@ -48,7 +48,7 @@ To start the development server, run the following command:
 npm run dev
 ```
 
-Open your browser and navigate to http://localhost:XXX to see the data visualization in action.
+Open your browser and navigate to http://localhost:5173 to see the data visualization in action.
 
 ## Chart.js Integration
 This project uses Chart.js to create graphs. You can find the official Chart.js documentation [here](https://www.chartjs.org/docs/latest/).
